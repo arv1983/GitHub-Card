@@ -1,25 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React, { useEffect, useState } from "react";
 
-function App() {
+const App = () => {
+  const [renderiza, setRenderiza] = useState(false);
+  function desativa() {
+    if (renderiza === true) {
+      setRenderiza(false);
+    } else {
+      setRenderiza(true);
+    }
+  }
+  const [error, setError] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    fetch("https://api.github.com/users/arv83")
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          setIsLoaded(true);
+          setItems(result);
+          console.log(result);
+        },
+
+        // Nota: é importante lidar com errros aqui
+        // em vez de um bloco catch() para não receber
+        // exceções de erros reais nos componentes.
+
+        (error) => {
+          setIsLoaded(true);
+          setError(error);
+        }
+      );
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={() => {
+            desativa();
+          }}
         >
-          Learn React
-        </a>
+          Toggle User
+        </button>
+        {renderiza ? (
+          <div>
+            <h1>{items.login}</h1>
+            <img src={items.avatar_url}></img>
+          </div>
+        ) : null}
       </header>
     </div>
   );
-}
+};
 
 export default App;
